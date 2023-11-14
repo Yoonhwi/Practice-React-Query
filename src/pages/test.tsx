@@ -12,6 +12,8 @@ export default function Test() {
     //동일한 네트워크요청을 막음!
   });
 
+  console.log(data);
+
   return (
     <>
       <div>Test Page</div>
