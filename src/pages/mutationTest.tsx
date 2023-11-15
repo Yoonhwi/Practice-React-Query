@@ -1,44 +1,45 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  MutationFunction,
+  useMutation,
+  UseBaseMutationResult,
+} from "@tanstack/react-query";
+import axios from "axios";
 import { useState } from "react";
-interface inputProps {
+interface InputProps {
   title: string;
   content: string;
 }
 
-const URL = "http://localhost:5000/Data";
+const URL = "http://localhost:5000";
 
 export default function MutationTest() {
-  const [input, setInput] = useState<inputProps>({ title: "", content: "" });
+  const [input, setInput] = useState<InputProps>({ title: "", content: "" });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput((prev) => ({ ...prev, [name]: value }));
   };
-  const mutation = useMutation<void, Error, inputProps>(
-    async (data: inputProps) => {
-      const response = await fetch(URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to submit data");
-      }
-    },
-    {
-      onSuccess: () => {
-        // 성공 시 수행할 작업
-        console.log("Data submitted successfully");
-        // 여기에 추가적으로 원하는 동작을 수행할 수 있습니다.
-      },
-    }
-  );
 
-  const onClickSubmit = () => {
-    console.log(input);
-  };
+  const mutation = useMutation({
+    mutationFn: (testData: InputProps) => {
+      return axios.post(`${URL}/Data`, testData);
+    },
+  });
+
+  // const postData = () => {
+  //   try {
+  //     const response = fetch(URL, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(input),
+  //     }).then((res) => res.json());
+
+  //     return response;
+  //   } catch (error) {
+  //     throw new Error("Error Fetch Post !!");
+  //   }
+  // };
+
   return (
     <div>
       <input
@@ -53,7 +54,13 @@ export default function MutationTest() {
         onChange={handleInputChange}
         value={input.content}
       />
-      <button onClick={() => onClickSubmit()}>전송</button>
+      <button
+        onClick={() => {
+          mutation.mutate(input);
+        }}
+      >
+        전송
+      </button>
     </div>
   );
 }
