@@ -1,6 +1,6 @@
 import { Loader } from "@/components/Loader";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 
 interface InputProps {
@@ -8,11 +8,17 @@ interface InputProps {
   content: string;
 }
 
+interface TestProps {
+  title: string;
+  content: string;
+  id: number;
+}
+
 const URL = "http://localhost:5000";
 
 export default function MutationTest() {
   const [input, setInput] = useState<InputProps>({ title: "", content: "" });
-
+  const [test, setTest] = useState<TestProps>();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput((prev) => ({ ...prev, [name]: value }));
@@ -20,7 +26,14 @@ export default function MutationTest() {
 
   const mutation = useMutation({
     mutationFn: (data: InputProps) => {
-      return axios.post(`${URL}/Data`, data);
+      return axios.post(`${URL}/Data2`, data);
+    },
+    onSuccess: async (data: AxiosResponse) => {
+      await setTest(data.data);
+      console.log("test:", test);
+    },
+    onError: (err) => {
+      console.log(err);
     },
   });
 

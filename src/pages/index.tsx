@@ -6,8 +6,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const data = fetch(URL).then((res) => res.json());
-    console.log(data);
+    fetch(URL).then((res) => res.json().then((res) => console.log(res)));
   }, []);
 
   return (
